@@ -57,6 +57,25 @@ export function remainColor(remainDay: number): "green" | "yellow" | "red" {
   return "red";
 }
 
+export function cycleBilling(nodeInfo: NodeBasicInfo): "月" | "季" | "半年" | "年" | "两年" | "三年" | "五年" | "一次性" {
+  const time = nodeInfo.billing_cycle;
+  if (time == 30) {
+    return "月";
+  } else if (time == 92) {
+    return "季";
+  } else if (time == 180) {
+    return "半年";
+  } else if (time == 365) {
+    return "年";
+  } else if (time == 730) {
+    return "两年";
+  } else if (time == 1095) {
+    return "三年";
+  } else if (time == 1825) {
+    return "五年";
+  }
+  return "一次性";
+}
 
 interface NodeProps {
   basic: NodeBasicInfo;

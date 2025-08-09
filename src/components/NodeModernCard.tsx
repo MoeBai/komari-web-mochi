@@ -18,7 +18,7 @@ import {
 import Flag from "./Flag";
 import type {NodeBasicInfo} from "@/contexts/NodeListContext";
 import type {Record} from "@/types/LiveData";
-import {formatUptime, getDaysRemaining, remainColor} from "./Node";
+import {cycleBilling, formatUptime, getDaysRemaining, remainColor} from "./Node";
 import {getOSImage, getOSName, formatBytes} from "@/utils";
 
 interface ModernCardProps {
@@ -149,36 +149,37 @@ export const ModernCard: React.FC<ModernCardProps> = ({basic, live, online}) => 
                 </Flex>
               </Flex>
             </Flex>
-            <Flex direction="column" align="end" gap="1" className="flex-shrink-0 ml-2">
+            <Flex direction="row" align="end" gap="1" className="flex-shrink-0 ml-2">
               <Badge
-                color={remainColor(getDaysRemaining(basic))}
+                color={online ? "green" : "gray"}
                 variant="soft"
                 size="1"
                 className={online ? "animate-pulse" : ""}
               >
                 <span className="text-[10px] sm:text-xs">
-                  {/*{online ? t("nodeCard.online") : t("nodeCard.offline")}*/}
-                  {basic.price === -1 ? "永久" : getDaysRemaining(basic) > 0 ? `剩余${getDaysRemaining(basic)}天` : `已过期${getDaysRemaining(basic)}天`}
+                  {online ? t("nodeCard.online") : t("nodeCard.offline")}
                 </span>
               </Badge>
               <Badge
-                color={"green"}
+                color={remainColor(getDaysRemaining(basic))}
+                variant="soft"
+                size="1"
+              >
+                <span className="text-[10px] sm:text-xs">
+                  {/*{online ? t("nodeCard.online") : t("nodeCard.offline")}*/}
+                  {basic.price === -1 ? "永久" : getDaysRemaining(basic) > 0 ? `剩余${getDaysRemaining(basic)}天` : `已过期${-getDaysRemaining(basic)}天`}
+                </span>
+              </Badge>
+              <Badge
+                color={"purple"}
                 variant="soft"
                 size="1"
                 hidden={basic.price === -1}
+                className={"text-xs"}
               >
                 <span className="text-[10px] sm:text-xs">
                   {/*{online ? t("nodeCard.online") : t("nodeCard.offline")}*/}
-                  {`${basic.price}${basic.currency}/${basic.billing_cycle}`}
-                </span>
-              </Badge>
-              <Badge
-                color={online ? "green" : "gray"}
-                variant="soft"
-                size="1"
-              >
-                <span className="text-[10px] sm:text-xs">
-                  {online ? t("nodeCard.online") : t("nodeCard.offline")}
+                  {`${basic.price}${basic.currency}/${cycleBilling(basic)}`}
                 </span>
               </Badge>
               {liveData.message && (
