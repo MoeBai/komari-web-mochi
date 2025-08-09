@@ -1,16 +1,18 @@
-import {
-  Card,
-  Flex,
-  Text,
-  Badge,
-  Separator,
-  IconButton,
-} from "@radix-ui/themes";
+import {Badge, Box, Card, Flex, IconButton, Separator, Text,} from "@radix-ui/themes";
 import type {LiveData, Record} from "../types/LiveData";
 import UsageBar from "./UsageBar";
 import Flag from "./Flag";
 import {useTranslation} from "react-i18next";
 import Tips from "./ui/tips";
+import type {TFunction} from "i18next";
+import {Link} from "react-router-dom";
+import {useIsMobile} from "@/hooks/use-mobile";
+import type {NodeBasicInfo} from "@/contexts/NodeListContext";
+import PriceTags from "./PriceTags";
+import {TrendingUp} from "lucide-react";
+import MiniPingChartFloat from "./MiniPingChartFloat";
+import {getOSImage, getOSName} from "@/utils";
+// import {node} from "globals";
 
 /** 将字节转换为人类可读的大小 */
 
@@ -42,28 +44,19 @@ export function formatBytes(bytes: number): string {
   return `${size.toFixed(2)} ${units[unitIndex]}`;
 }
 
-
-export function isExpired(nodeInfo: NodeBasicInfo): string {
-  const expiredDate = new Date(nodeInfo.expired_at);
-  if (nodeInfo.price !== -1) {
-    if (expiredDate.getFullYear() === 2225) {
-      return "永久";
-    } else {
-      return Math.floor((expiredDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)).toString()
-    }
-  }
-  return "-1";
+export function getDaysRemaining(nodeInfo: NodeBasicInfo): number {
+  return Math.floor(Date.parse(nodeInfo.expired_at) - Date.now() / (1000 * 60 * 60 * 24));
 }
 
-export function expiredColor(remainDay: string): "red" | "yellow" | "green" {
-  if (Number.parseInt(remainDay) > 7) {
+export function remainColor(remainDay: number): "green" | "yellow" | "red" {
+  if (remainDay > 7) {
     return "green";
-  } else if (Number.parseInt(remainDay) > 0) {
+  } else if (remainDay > 0) {
     return "yellow";
-  } else {
-    return "red";
   }
+  return "red";
 }
+
 
 interface NodeProps {
   basic: NodeBasicInfo;
@@ -151,16 +144,6 @@ const Node = ({basic, live, online}: NodeProps) => {
                 </IconButton>
               }
             />
-            {/* 加一个时间8 */}
-            <Badge hidden={basic.price == -1} color={expiredColor(isExpired(basic))} variant="soft">
-              {/*{isExpired(basic) ? t("nodeCard.online") : t("nodeCard.offline")}*/}
-              {isExpired(basic) + t("nodeCard.day")}
-            </Badge>
-            <Badge hidden={basic.price == -1} color={"green"} variant="soft">
-              {/*{online ? t("nodeCard.online") : t("nodeCard.offline")}*/}
-              {`${basic.currency} ${basic.price}/${basic.billing_cycle}`}
-            </Badge>
-            {/*时间结束*/}
             <Badge color={online ? "green" : "red"} variant="soft">
               {online ? t("nodeCard.online") : t("nodeCard.offline")}
             </Badge>
@@ -273,16 +256,6 @@ type NodeGridProps = {
   nodes: NodeBasicInfo[];
   liveData: LiveData;
 };
-
-import {Box} from "@radix-ui/themes";
-import type {TFunction} from "i18next";
-import {Link} from "react-router-dom";
-import {useIsMobile} from "@/hooks/use-mobile";
-import type {NodeBasicInfo} from "@/contexts/NodeListContext";
-import PriceTags from "./PriceTags";
-import {TrendingUp} from "lucide-react";
-import MiniPingChartFloat from "./MiniPingChartFloat";
-import {getOSImage, getOSName} from "@/utils";
 
 export const NodeGrid = ({nodes, liveData}: NodeGridProps) => {
   // 确保liveData是有效的
