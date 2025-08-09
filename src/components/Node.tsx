@@ -6,17 +6,17 @@ import {
   Separator,
   IconButton,
 } from "@radix-ui/themes";
-import type { LiveData, Record } from "../types/LiveData";
+import type {LiveData, Record} from "../types/LiveData";
 import UsageBar from "./UsageBar";
 import Flag from "./Flag";
-import { useTranslation } from "react-i18next";
+import {useTranslation} from "react-i18next";
 import Tips from "./ui/tips";
 
 /** 将字节转换为人类可读的大小 */
 
 /** 格式化秒*/
 export function formatUptime(seconds: number, t: TFunction): string {
-  if (!seconds || seconds < 0) return t("nodeCard.time_second", { val: 0 });
+  if (!seconds || seconds < 0) return t("nodeCard.time_second", {val: 0});
   const d = Math.floor(seconds / 86400);
   const h = Math.floor((seconds % 86400) / 3600);
   const m = Math.floor((seconds % 3600) / 60);
@@ -28,6 +28,7 @@ export function formatUptime(seconds: number, t: TFunction): string {
   if (s || parts.length === 0) parts.push(`${s} ${t("nodeCard.time_second")}`);
   return parts.join(" ");
 }
+
 export function formatBytes(bytes: number): string {
   const units = ["B", "KB", "MB", "GB", "TB", "PB"];
   let size = bytes;
@@ -41,19 +42,43 @@ export function formatBytes(bytes: number): string {
   return `${size.toFixed(2)} ${units[unitIndex]}`;
 }
 
+
+export function isExpired(nodeInfo: NodeBasicInfo): string {
+  const expiredDate = new Date(nodeInfo.expired_at);
+  if (nodeInfo.price !== -1) {
+    if (expiredDate.getFullYear() === 2225) {
+      return "永久";
+    } else {
+      return Math.floor((expiredDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)).toString()
+    }
+  }
+  return "-1";
+}
+
+export function expiredColor(remainDay: string): "red" | "yellow" | "green" {
+  if (Number.parseInt(remainDay) > 7) {
+    return "green";
+  } else if (Number.parseInt(remainDay) > 0) {
+    return "yellow";
+  } else {
+    return "red";
+  }
+}
+
 interface NodeProps {
   basic: NodeBasicInfo;
   live: Record | undefined;
   online: boolean;
 }
-const Node = ({ basic, live, online }: NodeProps) => {
+
+const Node = ({basic, live, online}: NodeProps) => {
   const [t] = useTranslation();
   const isMobile = useIsMobile();
   const defaultLive = {
-    cpu: { usage: 0 },
-    ram: { used: 0 },
-    disk: { used: 0 },
-    network: { up: 0, down: 0, totalUp: 0, totalDown: 0 },
+    cpu: {usage: 0},
+    ram: {used: 0},
+    disk: {used: 0},
+    network: {up: 0, down: 0, totalUp: 0, totalDown: 0},
   } as Record;
 
   const liveData = live || defaultLive;
@@ -82,14 +107,14 @@ const Node = ({ basic, live, online }: NodeProps) => {
       <Flex direction="column" gap="2">
         <Flex justify="between" align="center" my={isMobile ? "-1" : "0"}>
           <Flex justify="start" align="center">
-            <Flag flag={basic.region} />
+            <Flag flag={basic.region}/>
             <Link to={`/instance/${basic.uuid}`}>
               <Flex direction="column">
                 <Text
                   weight="bold"
                   size={isMobile ? "2" : "4"}
                   truncate
-                  style={{ maxWidth: "200px" }}
+                  style={{maxWidth: "200px"}}
                 >
                   {basic.name}
                 </Text>
@@ -122,17 +147,27 @@ const Node = ({ basic, live, online }: NodeProps) => {
               hours={24}
               trigger={
                 <IconButton variant="ghost" size="1">
-                  <TrendingUp size="14" />
+                  <TrendingUp size="14"/>
                 </IconButton>
               }
             />
+            {/* 加一个时间8 */}
+            <Badge hidden={basic.price != -1} color={expiredColor(isExpired(basic))} variant="soft">
+              {/*{isExpired(basic) ? t("nodeCard.online") : t("nodeCard.offline")}*/}
+              {isExpired(basic) + t("nodeCard.day")}
+            </Badge>
+            <Badge hidden={basic.price != -1} color={"green"} variant="soft">
+              {/*{online ? t("nodeCard.online") : t("nodeCard.offline")}*/}
+              {`${basic.currency} ${basic.price}/${basic.billing_cycle}`}
+            </Badge>
+            {/*时间结束*/}
             <Badge color={online ? "green" : "red"} variant="soft">
               {online ? t("nodeCard.online") : t("nodeCard.offline")}
             </Badge>
           </Flex>
         </Flex>
 
-        <Separator size="4" className="-mt-1" />
+        <Separator size="4" className="-mt-1"/>
 
         <Flex direction="column" gap="2">
           <Flex justify="between" hidden={isMobile}>
@@ -150,27 +185,27 @@ const Node = ({ basic, live, online }: NodeProps) => {
           </Flex>
           <Flex className="md:flex-col flex-row md:gap-1 gap-4">
             {/* CPU Usage */}
-            <UsageBar label={t("nodeCard.cpu")} value={liveData.cpu.usage} />
+            <UsageBar label={t("nodeCard.cpu")} value={liveData.cpu.usage}/>
 
             {/* Memory Usage */}
-            <UsageBar label={t("nodeCard.ram")} value={memoryUsagePercent} />
+            <UsageBar label={t("nodeCard.ram")} value={memoryUsagePercent}/>
             <Text
               className="md:block hidden"
               size="1"
               color="gray"
-              style={{ marginTop: "-4px" }}
+              style={{marginTop: "-4px"}}
             >
               ({formatBytes(liveData.ram.used)} / {formatBytes(basic.mem_total)}
               )
             </Text>
 
             {/* Disk Usage */}
-            <UsageBar label={t("nodeCard.disk")} value={diskUsagePercent} />
+            <UsageBar label={t("nodeCard.disk")} value={diskUsagePercent}/>
             <Text
               size="1"
               className="md:block hidden"
               color="gray"
-              style={{ marginTop: "-4px" }}
+              style={{marginTop: "-4px"}}
             >
               ({formatBytes(liveData.disk.used)} /{" "}
               {formatBytes(basic.disk_total)})
@@ -239,16 +274,17 @@ type NodeGridProps = {
   liveData: LiveData;
 };
 
-import { Box } from "@radix-ui/themes";
-import type { TFunction } from "i18next";
-import { Link } from "react-router-dom";
-import { useIsMobile } from "@/hooks/use-mobile";
-import type { NodeBasicInfo } from "@/contexts/NodeListContext";
+import {Box} from "@radix-ui/themes";
+import type {TFunction} from "i18next";
+import {Link} from "react-router-dom";
+import {useIsMobile} from "@/hooks/use-mobile";
+import type {NodeBasicInfo} from "@/contexts/NodeListContext";
 import PriceTags from "./PriceTags";
-import { TrendingUp } from "lucide-react";
+import {TrendingUp} from "lucide-react";
 import MiniPingChartFloat from "./MiniPingChartFloat";
-import { getOSImage, getOSName } from "@/utils";
-export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
+import {getOSImage, getOSName} from "@/utils";
+
+export const NodeGrid = ({nodes, liveData}: NodeGridProps) => {
   // 确保liveData是有效的
   const onlineNodes = liveData && liveData.online ? liveData.online : [];
 

@@ -279,7 +279,8 @@
     "system_info": "系统信息",
     "hardware_info": "硬件信息",
     "network_info": "网络信息",
-    "runtime_info": "运行时信息"
+    "runtime_info": "运行时信息",
+    "day": "天"
   },
   "login": {
     "title": "登录",

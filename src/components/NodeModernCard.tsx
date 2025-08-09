@@ -87,7 +87,7 @@ export const ModernCard: React.FC<ModernCardProps> = ({ basic, live, online }) =
         </div>
 
         {/* 状态指示条 */}
-        <div 
+        <div
           className={`absolute top-0 left-0 right-0 h-1 ${
             online ? 'bg-gradient-to-r from-green-500 via-emerald-500 to-green-500 animate-pulse' : 'bg-gray-500'
           }`}
@@ -118,6 +118,9 @@ export const ModernCard: React.FC<ModernCardProps> = ({ basic, live, online }) =
                   {online && (
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse flex-shrink-0 mr-1" />
                   )}
+                  {online && (
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse flex-shrink-0 mr-1" />
+                  )}
                   <img
                     src={getOSImage(basic.os)}
                     alt={basic.os}
@@ -135,8 +138,8 @@ export const ModernCard: React.FC<ModernCardProps> = ({ basic, live, online }) =
               </Flex>
             </Flex>
             <Flex direction="column" align="end" gap="1" className="flex-shrink-0 ml-2">
-              <Badge 
-                color={online ? "green" : "gray"} 
+              <Badge
+                color={online ? "green" : "gray"}
                 variant="soft"
                 size="1"
                 className={online ? "animate-pulse" : ""}
@@ -254,10 +257,10 @@ export const ModernCard: React.FC<ModernCardProps> = ({ basic, live, online }) =
                   </div>
                 </div>
               </div>
-              
+
               {/* 分隔线 */}
               <div className="w-full h-[1px] bg-accent-4" />
-              
+
               {/* 总流量 */}
               <div className="flex-1">
                 <Flex justify="between" align="center" mb="1">
