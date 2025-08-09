@@ -45,7 +45,7 @@ export function formatBytes(bytes: number): string {
 }
 
 export function getDaysRemaining(nodeInfo: NodeBasicInfo): number {
-  return Math.floor(Date.parse(nodeInfo.expired_at) - Date.now() / (1000 * 60 * 60 * 24));
+  return Math.floor((Date.parse(nodeInfo.expired_at) - Date.now()) / (1000 * 60 * 60 * 24));
 }
 
 export function remainColor(remainDay: number): "green" | "yellow" | "red" {

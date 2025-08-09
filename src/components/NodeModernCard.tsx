@@ -158,25 +158,24 @@ export const ModernCard: React.FC<ModernCardProps> = ({basic, live, online}) => 
               >
                 <span className="text-[10px] sm:text-xs">
                   {/*{online ? t("nodeCard.online") : t("nodeCard.offline")}*/}
-                  {getDaysRemaining(basic) > 0 ? `剩余${getDaysRemaining(basic)}天` : `已过期${getDaysRemaining(basic)}天`}
+                  {basic.price === -1 ? "永久" : getDaysRemaining(basic) > 0 ? `剩余${getDaysRemaining(basic)}天` : `已过期${getDaysRemaining(basic)}天`}
                 </span>
               </Badge>
               <Badge
                 color={"green"}
                 variant="soft"
                 size="1"
-                className={online ? "animate-pulse" : ""}
+                hidden={basic.price === -1}
               >
                 <span className="text-[10px] sm:text-xs">
                   {/*{online ? t("nodeCard.online") : t("nodeCard.offline")}*/}
-                  {`${basic.price}/${basic.currency}`}
+                  {`${basic.price}${basic.currency}/${basic.billing_cycle}`}
                 </span>
               </Badge>
               <Badge
                 color={online ? "green" : "gray"}
                 variant="soft"
                 size="1"
-                className={online ? "animate-pulse" : ""}
               >
                 <span className="text-[10px] sm:text-xs">
                   {online ? t("nodeCard.online") : t("nodeCard.offline")}
