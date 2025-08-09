@@ -152,11 +152,11 @@ const Node = ({basic, live, online}: NodeProps) => {
               }
             />
             {/* 加一个时间8 */}
-            <Badge hidden={basic.price != -1} color={expiredColor(isExpired(basic))} variant="soft">
+            <Badge hidden={basic.price == -1} color={expiredColor(isExpired(basic))} variant="soft">
               {/*{isExpired(basic) ? t("nodeCard.online") : t("nodeCard.offline")}*/}
               {isExpired(basic) + t("nodeCard.day")}
             </Badge>
-            <Badge hidden={basic.price != -1} color={"green"} variant="soft">
+            <Badge hidden={basic.price == -1} color={"green"} variant="soft">
               {/*{online ? t("nodeCard.online") : t("nodeCard.offline")}*/}
               {`${basic.currency} ${basic.price}/${basic.billing_cycle}`}
             </Badge>
